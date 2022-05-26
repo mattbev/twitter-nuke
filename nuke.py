@@ -42,15 +42,24 @@ def main(args):
         access_token=keys["access_token"],
         access_token_secret=keys["access_token_secret"],
     )
-    api = tweepy.API(auth)
+    api = tweepy.API(auth, wait_on_rate_limit=True)
 
     def destroy_status_wrapper(id):
         try:
             api.destroy_status(id)
         except:
             api.unretweet(id)
+        finally:
+            pass
+
+    def destroy_favorite_wrapper(id):
+        try:
+            api.destroy_favorite(id)
+        except:
+            pass
 
     destroyed_tweets, destroyed_favorites = 0, 0
+    requests = 0
     while True:
         user_tweets = api.user_timeline(
             count=COUNT, exclude_replies=False, include_rts=True
@@ -60,11 +69,14 @@ def main(args):
         if len(user_tweets) == 0 and len(user_favorites) == 0:
             break
 
-        (destroy_status_wrapper(tweet.id) for tweet in user_tweets)
-        (api.destroy_favorite(favorite.id) for favorite in user_favorites)
+        [destroy_status_wrapper(tweet.id) for tweet in user_tweets]
+        [destroy_favorite_wrapper(favorite.id) for favorite in user_favorites]
 
         destroyed_tweets += len(user_tweets)
         destroyed_favorites += len(user_favorites)
+        requests += 1
+
+        print(f"Requests: {requests}", end="\r")
 
     print(f"Destroyed tweets: {destroyed_tweets}")
     print(f"Destroyed favorites: {destroyed_favorites}")
