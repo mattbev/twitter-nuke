@@ -12,3 +12,6 @@ Steps:
 
 ## Known issues
 - Retweets and favorites that were deleted by the author cannot be removed from your profile. If the author "undeletes" their post, it will reappear on your profile. Once it reappears, you can remove it from your profile with this script or manually. 
+
+## Notes
+This code is poorly written but serves a purpose.
